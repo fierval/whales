@@ -1,8 +1,8 @@
-import cv2
+﻿import cv2
 import numpy as np
 from os import path
 from kobra.imaging import show_images
-
+# remove the whale
 root = "/kaggle/whales/imgs"
 img_file = "w_686.jpg"
 

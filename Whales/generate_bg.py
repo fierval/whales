@@ -9,6 +9,7 @@ img_file = "w_686.jpg"
 img_ = path.join(root, img_file)
 
 img = cv2.imread(img_)
+img_shift = img
 
 ### preprocess
 
@@ -29,5 +30,5 @@ ret,label,center=cv2.kmeans(Z,K,None,criteria,10,cv2.KMEANS_RANDOM_CENTERS)
 center = np.uint8(center)
 res = center[label.flatten()]
 res2 = res.reshape((img_shift.shape))
-
+res2 = cv2.pyrUp(cv2.pyrUp(res2))
 show_images([img, res2])

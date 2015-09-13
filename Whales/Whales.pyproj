@@ -25,6 +25,12 @@
     <Compile Include="generate_bg.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="generate_samples.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="split_whales.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Whales.py" />
   </ItemGroup>
   <PropertyGroup>

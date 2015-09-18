@@ -5,7 +5,7 @@ from os import path
 from kobra.imaging import show_images
 
 root = "/kaggle/whales/imgs"
-img_file = "w_686.jpg"
+img_file = "w_39.jpg"
 
 img_ = path.join(root, img_file)
 

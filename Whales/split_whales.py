@@ -32,4 +32,4 @@ def copy_files_to_label_dirs(inp_path, out_path, labels_file):
             continue
         print "copied {0} to {1}".format(inp_file, file_name)
 
-    print l
+    print bad

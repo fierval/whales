@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>16b12e96-e80b-406b-8bb1-cd0b7457e849</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>Whales.py</StartupFile>
+    <StartupFile>k_means.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -22,6 +22,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="contours.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="generate_bg.py">
       <SubType>Code</SubType>
     </Compile>
@@ -31,7 +34,7 @@
     <Compile Include="split_whales.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Whales.py" />
+    <Compile Include="k_means.py" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

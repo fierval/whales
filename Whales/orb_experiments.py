@@ -27,7 +27,7 @@ def orb_show(img):
     img2 = np.zeros_like(img)
     # draw only keypoints location,not size and orientation
     img3 = cv2.drawKeypoints(img, kp, img2, color=(0,255,0), flags=0)
-    show_images([img2])
+    show_images([img3])
 
 def orb_match(img0, img1):
 

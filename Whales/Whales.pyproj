@@ -22,6 +22,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="color_transfer.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="contours.py">
       <SubType>Code</SubType>
     </Compile>

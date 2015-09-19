@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>16b12e96-e80b-406b-8bb1-cd0b7457e849</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>k_means.py</StartupFile>
+    <StartupFile>crop.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -22,7 +22,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="color_transfer.py">
+    <Compile Include="crop.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="contours.py">

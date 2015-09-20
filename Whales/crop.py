@@ -1,5 +1,11 @@
-﻿from matplotlib import pyplot as plt
+﻿from IPython.parallel import Client
+from kobra.tr_utils import time_now_str, prep_out_path
+c = Client()
+
+%%px --local
+from matplotlib import pyplot as plt
 from os import path
+import os
 import numpy as np
 import cv2
 import pandas as pd
@@ -14,18 +20,12 @@ def get_masks(images):
         return mask
     return map(lambda i: mask(i), images)
 
-img_path = "/kaggle/whales/imgs"
-# this is the image into the colors of which we want to map
-ref_image_name = "w_188.jpg"
-# images picked to illustrate different problems arising during algorithm application
-image_names = ["w_31.jpg", "w_25.jpg", "w_190.jpg"]
-#image_names = ["w_81.jpg"]
+img_path = "/kaggle/whales/color"
+out_path = "/kaggle/whales/cropped"
+size = (256, 256)
+image_names = os.listdir(img_path)
 
 image_paths = map(lambda t: path.join(img_path, t), image_names)
-images = np.array(map(lambda p: cv2.imread(p), image_paths))
-image_titles = map(lambda i: path.splitext(i)[0], image_names)
-
-ref_image = cv2.imread(path.join(img_path, ref_image_name))
 
 def pre(img):
     img_shift = cv2.pyrDown(img)
@@ -37,17 +37,7 @@ def pre(img):
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2, 2))
     img_shift = cv2.morphologyEx(img_shift, cv2.MORPH_OPEN, kernel)
 
-    clahe = cv2.createCLAHE(clipLimit = 2, tileGridSize = (16, 16))
-    hsv = cv2.cvtColor(img_shift, cv2.COLOR_BGR2HSV)
-    (h, s, v) = cv2.split(hsv)
-    vE = clahe.apply(v)
-    hsv = cv2.merge((h, s, vE))
-    img_shift = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
-
     return img_shift
-
-# preprocess ref image
-ref_im_pre = pre(ref_image)
 
 def kmeans(image):
     Z = image.reshape((-1,3))
@@ -64,53 +54,52 @@ def kmeans(image):
     res2 = res.reshape((image.shape))
     return res2, center, label.flatten().reshape((image[:,:,0].shape))
 
-# takes pre-processed images
-# prep
-def process(ims_pre):
-    # get the masks (just stubs)
-    masks = np.array(get_masks(ims_pre))
+def crop(image_name):
+    image = cv2.imread(image_name)
+    ims_pre = pre(image)
+    im_tuple = kmeans(ims_pre)
 
-    refMask = get_masks([ref_im_pre])
-    refHist = calc_hist([ref_im_pre], refMask)
+    proc_im = im_tuple[0]
+    center = im_tuple[1]
+    labels = im_tuple[2]
 
-    histSpec = histogram_specification(refHist, ims_pre, masks)
-    kmeans_imgs = map(kmeans, histSpec)
+    lab_quants = [labels[labels == i].shape[0] for i in range(0,3)]
+    max_ind = np.argmax(lab_quants)
+    min_ind = np.argmin(lab_quants)
 
-    #show_images(map(lambda x: x[0], kmeans_imgs), scale = 0.9)
-    return kmeans_imgs
+    middle = filter(lambda r: r != max_ind and r != min_ind, range(0, 3))[0]
 
-def crop(images):
-    ims_pre = map(pre, images)
-    ims = process(ims_pre)
+    lower = center[max_ind]
+    upper = center[middle]
+    mask = cv2.inRange(proc_im, lower, upper)
 
-    for j, im_tuple in enumerate(ims):
-        proc_im = im_tuple[0]
-        center = im_tuple[1]
-        labels = im_tuple[2]
+    _, cnts, _ = cv2.findContours(mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-        lab_quants = [labels[labels == i].shape[0] for i in range(0,3)]
-        max_ind = argmax(lab_quants)
-        min_ind = argmin(lab_quants)
+    # get 10 largest areas, except for the last one
+    areas = map(cv2.contourArea, cnts)
+    contour_areas_sorted = np.argsort(areas)[:-1]
 
-        middle = filter(lambda r: r != max_ind and r != min_ind, range(0, 3))[0]
+    cnts = [cnts[i] for i in contour_areas_sorted[::-1][:10]]
+    # bounding rectangle for cropping
+    x, y, w, h = cv2.boundingRect(np.vstack(cnts))
 
-        lower = center[argmax(lab_quants)]
-        upper = center[middle]
-        mask = cv2.inRange(proc_im, lower, upper)
+    # good for debugging
+    #out_rect = cv2.rectangle(proc_im.copy(), (x, y), (x + w, y + h), (0, 255, 0), 2)
+    #plt.imshow(out_rect); plt.show()
 
-        _, cnts, _ = cv2.findContours(mask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    # now crop it
+    x1, y1, w1, h1 = tuple(map(lambda e: e * 4, (x, y, w, h)))
+    toSave = cv2.resize(image[y1:y1+h1, x1:x1+w1, :], (256, 256))
+    out_name = path.split(image_name)[1]
+    out_im_name = path.join(out_path, out_name)
 
-        # get 10 largest areas, except for the last one
-        areas = map(cv2.contourArea, cnts)
-        contour_areas_sorted = argsort(areas)[:-1]
+    cv2.imwrite(out_im_name, toSave)
 
-        cnts = [cnts[i] for i in contour_areas_sorted[::-1][:10]]
-        # bounding rectangle for cropping
-        x, y, w, h = cv2.boundingRect(np.vstack(cnts))
+    return out_im_name
 
-        # good for debugging
-        #out_rect = cv2.rectangle(proc_im.copy(), (x, y), (x + w, y + h), (0, 255, 0), 2)
-        #plt.imshow(out_rect); plt.show()
-
-        # now crop it
-        yield ims_pre[j][y:y+h, x:x+w, :] 
+prep_out_path(out_path)
+dv = Client().load_balanced_view()
+fs = dv.map(crop, np.array(image_paths))
+print "Started: ", time_now_str()
+fs.wait()
+print "Finished: ", time_now_str()

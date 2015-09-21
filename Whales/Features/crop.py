@@ -59,6 +59,9 @@ def crop(image_name):
     ims_pre = pre(image)
     im_tuple = kmeans(ims_pre)
 
+    out_name = path.split(image_name)[1]
+    out_im_name = path.join(out_path, out_name)
+
     proc_im = im_tuple[0]
     center = im_tuple[1]
     labels = im_tuple[2]
@@ -80,20 +83,21 @@ def crop(image_name):
     contour_areas_sorted = np.argsort(areas)[:-1]
 
     cnts = [cnts[i] for i in contour_areas_sorted[::-1][:10]]
-    # bounding rectangle for cropping
-    x, y, w, h = cv2.boundingRect(np.vstack(cnts))
+    if len(cnts) == 0:
+        cv2.imwrite(out_im_name, image)
+    else:
+        # bounding rectangle for cropping
+        x, y, w, h = cv2.boundingRect(np.vstack(cnts))
 
-    # good for debugging
-    #out_rect = cv2.rectangle(proc_im.copy(), (x, y), (x + w, y + h), (0, 255, 0), 2)
-    #plt.imshow(out_rect); plt.show()
+        # good for debugging
+        #out_rect = cv2.rectangle(proc_im.copy(), (x, y), (x + w, y + h), (0, 255, 0), 2)
+        #plt.imshow(out_rect); plt.show()
 
-    # now crop it
-    x1, y1, w1, h1 = tuple(map(lambda e: e * 4, (x, y, w, h)))
-    toSave = cv2.resize(image[y1:y1+h1, x1:x1+w1, :], (256, 256))
-    out_name = path.split(image_name)[1]
-    out_im_name = path.join(out_path, out_name)
+        # now crop it
+        x1, y1, w1, h1 = tuple(map(lambda e: e * 4, (x, y, w, h)))
+        toSave = cv2.resize(image[y1:y1+h1, x1:x1+w1, :], (256, 256))
 
-    cv2.imwrite(out_im_name, toSave)
+        cv2.imwrite(out_im_name, toSave)
 
     return out_im_name
 
@@ -103,3 +107,4 @@ fs = dv.map(crop, np.array(image_paths))
 print "Started: ", time_now_str()
 fs.wait()
 print "Finished: ", time_now_str()
+

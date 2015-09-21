@@ -7,7 +7,7 @@ import shutil
 from shutil import copy
 
 labels_file = "/Kaggle/whales/train.csv"    
-inp_path = "/Kaggle/whales/c1"
+inp_path = "/Kaggle/whales/cropped"
 out_path = "/Kaggle/whales/train"
 test_path = "/Kaggle/whales/test"
 
@@ -46,3 +46,5 @@ def copy_test_files(inp_path, test_path, labels_file):
     for f in test_files:
         copy(path.join(inp_path, f), path.join(test_path, f))
 
+copy_files_to_label_dirs(inp_path, out_path, labels_file)
+copy_test_files(inp_path, test_path, labels_file)

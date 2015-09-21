@@ -1,4 +1,4 @@
-from IPython.parallel import Client
+﻿from IPython.parallel import Client
 c = Client()
 
 %%px --local
@@ -22,8 +22,8 @@ def generate_samples(dir):
         fl = path.join(root, dir, f)
         im = cv2.imread(fl)
 
-        for rot in range(20, 180, 20):
-            for scale in np.linspace(0.8, 1.2, 3):
+        for rot in range(20, 360, 20):
+            for scale in np.linspace(1, 1, 1):
                 im_rot = imutils.rotate(im, rot, scale = scale)
 
                 new_name = path.splitext(fl)[0]

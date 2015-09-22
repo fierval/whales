@@ -64,7 +64,7 @@ def map_labels(labels_file, labels_map):
     unique_labs = pd.unique(labels)
     ld = {value: key for key, value in enumerate(unique_labs)}
     ds = pd.DataFrame.from_dict(ld, orient='index')
-    ds.to_csv(labels_map, header = False)
+    ds.to_csv(labels_map, header = 0)
 
 copy_files_to_label_dirs(inp_path, out_path, labels_file)
 copy_test_files(inp_path, test_path, labels_file)

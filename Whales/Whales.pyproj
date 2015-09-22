@@ -38,6 +38,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Features\k_means.py" />
+    <Compile Include="Learning\BatchGenerator.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Learning\cnn_keras.py">
       <SubType>Code</SubType>
     </Compile>

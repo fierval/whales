@@ -3,16 +3,32 @@ import pandas as pd
 import os
 from os import path
 import matplotlib.pylab as plt
+import cv2
 
 from keras.models import Sequential
 from keras.layers.core import Dense, Dropout, Activation, Flatten
 from keras.layers.convolutional import Convolution2D, MaxPooling2D
 from keras.optimizers import SGD
 
-out_path = "/Kaggle/whales/train"
-test_path = "/Kaggle/whales/test"
-train_path = "/Kaggle/whales/kerano"
+train_path = "/Kaggle/whales/train"
 labels_map = "/Kaggle/whales/labels_map.csv"
+
+def build_data_set(train_path, labels_map):
+    dirs = filter(path.isdir, map(lambda f: path.join(train_path, f), os.listdir(train_path)))
+    names = map(lambda d: path.split(d)[1], dirs)
+
+    labls = pd.read_csv(labels_map, header=None)
+    ldict = {key: value for key, value in labls.values}
+
+    Y_train = []
+    X_train = []
+    for dir, name in zip(dirs, names):
+
+        files = os.listdir(dir)
+        for f in files:
+            Y_train += [ldict[name]]
+            im = cv2.imread(path.join(dir, f))
+            X_train += [im]      
 
 def train(X_train, Y_train):
     model = Sequential()

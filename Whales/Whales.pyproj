@@ -38,9 +38,13 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Features\k_means.py" />
+    <Compile Include="Learning\cnn_keras.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Features\" />
+    <Folder Include="Learning\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

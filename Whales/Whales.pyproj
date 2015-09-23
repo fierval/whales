@@ -6,8 +6,7 @@
     <ProjectGuid>16b12e96-e80b-406b-8bb1-cd0b7457e849</ProjectGuid>
     <ProjectHome>.</ProjectHome>
     <StartupFile>Features\crop.py</StartupFile>
-    <SearchPath>
-    </SearchPath>
+    <SearchPath>Learning\</SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>Whales</Name>

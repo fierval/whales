@@ -5,8 +5,24 @@ from os import path
 import matplotlib.pylab as plt
 import cv2
 
-train_path = "/Kaggle/whales/train"
+train_path = "/Kaggle/whales/kerano"
+labels_file = "/Kaggle/whales/train.csv"
 labels_map = "/Kaggle/whales/labels_map.csv"
+
+from keras.utils import np_utils
+
+class DataSetLoader(object):
+    def __init__(self, train_path, labels_file, labels_map):
+        labels = pd.read_csv(labels_file)
+        labels_categ_dict = {key: value for key, value in labels.values}
+
+        labls = pd.read_csv(labels_map, header=None)
+        ldict = {key: value for key, value in labls.values}
+
+        files = map(lambda f: path.join(train_path, f), os.listdir(train_path))
+        self.X_train = map(cv2.imread, files)
+        names = map(lambda f: path.split(f)[1], files)
+        self.Y_train = np_utils.to_categorical(map(lambda n: ldict[labels_categ_dict[n]], names))
 
 class BatchGenerator(object):
 
@@ -15,28 +31,29 @@ class BatchGenerator(object):
         self.files = []
         self.n = n
 
-        self.dirs = filter(path.isdir, map(lambda f: path.join(self.train_path, f), os.listdir(self.train_path)))
-        self.names = map(lambda d: path.split(d)[1], dirs)
-
-        labls = pd.read_csv(self.labels_map, header=None)
+        dirs = filter(path.isdir, map(lambda f: path.join(train_path, f), os.listdir(train_path)))
+        labls = pd.read_csv(labels_map, header=None)
         self.ldict = {path.join(train_path, key): value for key, value in labls.values}
+
         for d in dirs:
             dir = path.join(train_path, d)
             files = os.listdir(dir)
             files = map(lambda f: path.join(dir, f), files)
             self.files += files
 
+        self.total = len(self.files)
+
     def __iter__(self):
         return self
 
     def next(self): # Python 3: def __next__(self)
-        if self.current > self.high:
+        if self.current > self.total:
             raise StopIteration
         else:
             y_train = []
             x_train = []
             i = 0
-            while(i < self.n and self.current < len(self.files)):
+            while(i < self.n and self.current < self.total):
                 im_path = self.files[self.current + i]
                 im = cv2.imread(im_path)
                 lab_path = path.split(im_path)[0]
@@ -45,21 +62,3 @@ class BatchGenerator(object):
                 i += 1
                 self.current += 1
             return (x_train, y_train)             
-
-    def build_data_set(self):
-        dirs = filter(path.isdir, map(lambda f: path.join(self.train_path, f), os.listdir(self.train_path)))
-        names = map(lambda d: path.split(d)[1], dirs)
-
-        labls = pd.read_csv(self.labels_map, header=None)
-        ldict = {key: value for key, value in labls.values}
-
-        Y_train = []
-        X_train = []
-        for dir, name in zip(dirs, names):
-
-            files = os.listdir(dir)
-            for f in files:
-                Y_train += [ldict[name]]
-                im = cv2.imread(path.join(dir, f))
-                X_train += [im]      
-

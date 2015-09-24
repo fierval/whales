@@ -1,4 +1,4 @@
-import numpy as np
+﻿import numpy as np
 import pandas as pd
 import os
 from os import path
@@ -22,6 +22,8 @@ class DataSetLoader(object):
 
         files = map(lambda f: path.join(train_path, f), os.listdir(train_path))
         self.X_train = np.array(map(cv2.imread, files))
+        # Theano wants depth (# of channels) to be the first dimension
+        self.X_train = np.transpose(self.X_train, (0, 3, 1, 2))
         names = map(lambda f: path.split(f)[1], files)
         self.Y_train = np_utils.to_categorical(map(lambda n: ldict[labels_categ_dict[n]], names))
     

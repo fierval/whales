@@ -1,4 +1,4 @@
-import numpy as np
+﻿import numpy as np
 import pandas as pd
 import os
 from os import path
@@ -11,6 +11,7 @@ from keras.layers.core import Dense, Dropout, Activation, Flatten
 from keras.layers.convolutional import Convolution2D, MaxPooling2D
 from keras.optimizers import SGD
 from keras.preprocessing.image import ImageDataGenerator
+from keras.utils.dot_utils import Grapher
 
 train_path = "/Kaggle/whales/kerano"
 labels_file = "/Kaggle/whales/train.csv"
@@ -43,7 +44,7 @@ def train(train_path, labels_file, labels_map):
     model.add(Activation('relu'))
     model.add(MaxPooling2D(poolsize=(2, 2)))
     model.add(Dropout(0.25))
-
+    
     model.add(Flatten())
     model.add(Dense(64*8*8, 1000))
     model.add(Activation('relu'))
@@ -55,10 +56,13 @@ def train(train_path, labels_file, labels_map):
     sgd = SGD(lr=0.1, decay=1e-6, momentum=0.9, nesterov=True)
     model.compile(loss='categorical_crossentropy', optimizer=sgd)
 
+    #grapher = Grapher()
+    #grapher.plot(model, "/temp/graph.png")
+
     #model.fit(X_train, Y_train, batch_size=10, nb_epoch=1)
     nb_epoch = 10
     for e in range(nb_epoch):
         print 'Epoch', e
         # batch train with realtime data augmentation
         for X_batch, Y_batch in datagen.flow(X_train, Y_train, batch_size=5):
-            loss = model.fit(X_batch, Y_batch)
+            loss = model.train_on_batch(X_batch, Y_batch)

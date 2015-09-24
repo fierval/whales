@@ -4,6 +4,7 @@ import os
 from os import path
 import matplotlib.pylab as plt
 import cv2
+from sklearn.cross_validation import train_test_split
 
 train_path = "/Kaggle/whales/kerano"
 labels_file = "/Kaggle/whales/train.csv"
@@ -20,9 +21,13 @@ class DataSetLoader(object):
         ldict = {key: value for key, value in labls.values}
 
         files = map(lambda f: path.join(train_path, f), os.listdir(train_path))
-        self.X_train = map(cv2.imread, files)
+        self.X_train = np.array(map(cv2.imread, files))
         names = map(lambda f: path.split(f)[1], files)
         self.Y_train = np_utils.to_categorical(map(lambda n: ldict[labels_categ_dict[n]], names))
+    
+    def get_fraction(self, n = .8):
+        X_train, _, Y_train, _ = train_test_split(self.X_train, self.Y_train, train_size = n)
+        return X_train, Y_train
 
 class BatchGenerator(object):
 

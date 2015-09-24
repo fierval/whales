@@ -26,6 +26,8 @@ def train(train_path, labels_file, labels_map):
         horizontal_flip=True)
 
     dsl = DataSetLoader(train_path, labels_file, labels_map)
+    X_train, Y_train = dsl.get_fraction(.7)
+    datagen.fit(X_train)
 
     model = Sequential()
     model.add(Convolution2D(32, 3, 3, 3, border_mode='full')) 
@@ -53,4 +55,10 @@ def train(train_path, labels_file, labels_map):
     sgd = SGD(lr=0.1, decay=1e-6, momentum=0.9, nesterov=True)
     model.compile(loss='categorical_crossentropy', optimizer=sgd)
 
-    model.fit(X_train, Y_train, batch_size=10, nb_epoch=1)
+    #model.fit(X_train, Y_train, batch_size=10, nb_epoch=1)
+    nb_epoch = 10
+    for e in range(nb_epoch):
+        print 'Epoch', e
+        # batch train with realtime data augmentation
+        for X_batch, Y_batch in datagen.flow(X_train, Y_train, batch_size=5):
+            loss = model.fit(X_batch, Y_batch)

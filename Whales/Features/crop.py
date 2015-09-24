@@ -84,7 +84,7 @@ def crop(image_name):
 
     cnts = [cnts[i] for i in contour_areas_sorted[::-1][:10]]
     if len(cnts) == 0:
-        cv2.imwrite(out_im_name, image)
+        cv2.imwrite(out_im_name, cv2.resize(image, (256, 256)))
     else:
         # bounding rectangle for cropping
         x, y, w, h = cv2.boundingRect(np.vstack(cnts))

@@ -27,7 +27,7 @@ def train(train_path, labels_file, labels_map):
         horizontal_flip=True)
 
     dsl = DataSetLoader(train_path, labels_file, labels_map)
-    X_train, Y_train = dsl.get_fraction(.7)
+    X_train, Y_train = dsl.get_fraction(.5)
     datagen.fit(X_train)
 
     model = Sequential()
@@ -44,9 +44,16 @@ def train(train_path, labels_file, labels_map):
     model.add(Activation('relu'))
     model.add(MaxPooling2D(poolsize=(2, 2)))
     model.add(Dropout(0.25))
+
+    model.add(Convolution2D(96, 64, 3, 3, border_mode='full')) 
+    model.add(Activation('relu'))
+    model.add(Convolution2D(96, 96, 3, 3)) 
+    model.add(Activation('relu'))
+    model.add(MaxPooling2D(poolsize=(2, 2)))
+    model.add(Dropout(0.25))
     
     model.add(Flatten())
-    model.add(Dense(64*64*64, 1000))
+    model.add(Dense(96*32*32, 1000))
     model.add(Activation('relu'))
     model.add(Dropout(0.5))
 
@@ -64,6 +71,6 @@ def train(train_path, labels_file, labels_map):
     for e in range(nb_epoch):
         print 'Epoch', e
         # batch train with realtime data augmentation
-        for X_batch, Y_batch in datagen.flow(X_train, Y_train, batch_size=5):
+        for X_batch, Y_batch in datagen.flow(X_train, Y_train, batch_size=5, save_to_dir="/temp", save_format="png"):
             loss = model.train_on_batch(X_batch, Y_batch)
             print 'Loss', loss

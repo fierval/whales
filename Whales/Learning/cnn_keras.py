@@ -22,8 +22,8 @@ def train(train_path, labels_file, labels_map):
         featurewise_center=True,
         featurewise_std_normalization=True,
         rotation_range=20,
-        width_shift_range=0.2,
-        height_shift_range=0.2,
+        #width_shift_range=0.2,
+        #height_shift_range=0.2,
         horizontal_flip=True)
 
     dsl = DataSetLoader(train_path, labels_file, labels_map)
@@ -46,7 +46,7 @@ def train(train_path, labels_file, labels_map):
     model.add(Dropout(0.25))
     
     model.add(Flatten())
-    model.add(Dense(64*8*8, 1000))
+    model.add(Dense(64*64*64, 1000))
     model.add(Activation('relu'))
     model.add(Dropout(0.5))
 
@@ -66,3 +66,4 @@ def train(train_path, labels_file, labels_map):
         # batch train with realtime data augmentation
         for X_batch, Y_batch in datagen.flow(X_train, Y_train, batch_size=5):
             loss = model.train_on_batch(X_batch, Y_batch)
+            print 'Loss', loss

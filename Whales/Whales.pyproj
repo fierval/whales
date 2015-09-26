@@ -43,6 +43,9 @@
     <Compile Include="Learning\cnn_keras.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Learning\submission.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Features\" />

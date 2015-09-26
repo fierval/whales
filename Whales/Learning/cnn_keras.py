@@ -11,7 +11,7 @@ from keras.layers.core import Dense, Dropout, Activation, Flatten
 from keras.layers.convolutional import Convolution2D, MaxPooling2D
 from keras.optimizers import SGD
 from keras.preprocessing.image import ImageDataGenerator
-from keras.utils.dot_utils import Grapher
+#from keras.utils.dot_utils import Grapher
 from keras.utils import generic_utils
 
 train_path = "/Kaggle/whales/kerano"
@@ -28,7 +28,7 @@ datagen = ImageDataGenerator(
     horizontal_flip=True)
 
 dsl = DataSetLoader(train_path, labels_file, labels_map)
-X_train, Y_train, X_test, Y_test = dsl.get_fraction(.7)
+X_train, Y_train, X_test, Y_test = dsl.get_fraction(.8)
 datagen.fit(X_train, augment=False)
 
 model = Sequential()
@@ -81,7 +81,10 @@ model.compile(loss='categorical_crossentropy', optimizer=sgd)
 x_train = X_train - datagen.mean
 x_train = x_train / datagen.std
 
-model.fit(x_train, Y_train, batch_size=10, nb_epoch=1)
+x_test = X_test - datagen.mean
+x_test = x_test / datagen.std
+
+model.fit(x_train, Y_train, batch_size=30, nb_epoch=50, validation_data=(x_test, Y_test))
 
 nb_epoch = 10
 # batch train with realtime data augmentation

@@ -84,13 +84,13 @@ x_train = x_train / datagen.std
 x_test = X_test - datagen.mean
 x_test = x_test / datagen.std
 
-model.fit(x_train, Y_train, batch_size=30, nb_epoch=50, validation_data=(x_test, Y_test))
+model.fit(x_train, Y_train, batch_size=30, nb_epoch=4, validation_data=(x_test, Y_test))
 
 json_string = model.to_json()
-open('/kaggle/whales/models/model_1.json', 'w').write(json_string)
-model.save_weights('/kaggle/whales/models/weights_1.h5', overwrite=True)
+open('/users/boris/dropbox/kaggle/whales/models/model_1.json', 'w').write(json_string)
+model.save_weights('/users/boris/dropbox/kaggle/whales/models/weights_1.h5', overwrite=True)
 
-nb_epoch = 10
+#nb_epoch = 10
 # batch train with realtime data augmentation
 #progbar = generic_utils.Progbar(X_train.shape[0])
 #for e in range(nb_epoch):

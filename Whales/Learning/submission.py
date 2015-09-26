@@ -25,4 +25,4 @@ y_train = model.predict(ims)
 labels = pd.DataFrame(y_train, columns=ss.columns[1:])
 preds = images.join(labels)
 
-preds.to_csv("/kaggle/whales/submissions/sub1.csv")
+preds.to_csv("/kaggle/whales/submissions/sub1.csv", index=False)

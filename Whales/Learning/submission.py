@@ -1,17 +1,10 @@
-﻿import numpy as np
-import pandas as pd
-import os
+﻿import pandas as pd
 from os import path
-import matplotlib.pylab as plt
 import cv2
+import numpy as np
 
-from keras.models import Sequential, model_from_json
-from keras.layers.core import Dense, Dropout, Activation, Flatten
-from keras.layers.convolutional import Convolution2D, MaxPooling2D
-from keras.optimizers import SGD
-from keras.preprocessing.image import ImageDataGenerator
+from keras.models import model_from_json
 #from keras.utils.dot_utils import Grapher
-from keras.utils import generic_utils
 
 train_path = "/Kaggle/whales/kerano"
 labels_file = "/Kaggle/whales/train.csv"
@@ -32,6 +25,3 @@ labels = pd.DataFrame(y_train, columns=ss.columns[1:])
 preds = images.join(labels)
 
 preds.to_csv("/kaggle/whales/submissions/sub1.csv")
-
-
-

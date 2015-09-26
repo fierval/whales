@@ -28,8 +28,8 @@ class DataSetLoader(object):
         self.Y_train = np_utils.to_categorical(map(lambda n: ldict[labels_categ_dict[n]], names))
     
     def get_fraction(self, n = .8):
-        X_train, _, Y_train, _ = train_test_split(self.X_train, self.Y_train, train_size = n)
-        return X_train, Y_train
+        X_train, X_test, Y_train, Y_test = train_test_split(self.X_train, self.Y_train, train_size = n)
+        return X_train, Y_train, X_test, Y_test
 
 class BatchGenerator(object):
 

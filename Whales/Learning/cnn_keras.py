@@ -28,8 +28,8 @@ datagen = ImageDataGenerator(
     horizontal_flip=True)
 
 dsl = DataSetLoader(train_path, labels_file, labels_map)
-X_train, Y_train = dsl.get_fraction(.7)
-datagen.fit(X_train)
+X_train, Y_train, X_test, Y_test = dsl.get_fraction(.7)
+datagen.fit(X_train, augment=True)
 
 model = Sequential()
 model.add(Convolution2D(32, 3, 3, 3, border_mode='full')) 

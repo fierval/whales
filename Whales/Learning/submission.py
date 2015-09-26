@@ -7,6 +7,7 @@ from keras.models import model_from_json
 #from keras.utils.dot_utils import Grapher
 
 train_path = "/Kaggle/whales/kerano"
+test_path = "/Kaggle/whales/test"
 labels_file = "/Kaggle/whales/train.csv"
 labels_map = "/Kaggle/whales/labels_map.csv"
 models_path = "/kaggle/whales/models"
@@ -17,8 +18,8 @@ model = model_from_json(open(json_path).read())
 model.load_weights(path.join(models_path, "weights_1.h5"))
 
 ss = pd.read_csv(sample_submission)
-ims = map(cv2.imread, ss)
-images = pd.DataFrame(ss['Images'])
+images = pd.DataFrame(ss['Image'])
+ims = np.array(map(cv2.imread, np.array(map(lambda im_f: path.join(test_path, im_f), images.values)).flatten())).transpose(0, 3, 1, 2)
 
 y_train = model.predict(ims)
 labels = pd.DataFrame(y_train, columns=ss.columns[1:])

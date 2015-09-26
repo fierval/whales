@@ -20,8 +20,8 @@ def get_masks(images):
         return mask
     return map(lambda i: mask(i), images)
 
-img_path = "/kaggle/whales/color"
-out_path = "/kaggle/whales/cropped"
+img_path = "/kaggle/whales/c1"
+out_path = "/kaggle/whales/test"
 size = (256, 256)
 image_names = os.listdir(img_path)
 

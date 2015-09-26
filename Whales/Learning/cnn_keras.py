@@ -29,7 +29,7 @@ datagen = ImageDataGenerator(
 
 dsl = DataSetLoader(train_path, labels_file, labels_map)
 X_train, Y_train, X_test, Y_test = dsl.get_fraction(.7)
-datagen.fit(X_train, augment=True)
+datagen.fit(X_train, augment=False)
 
 model = Sequential()
 model.add(Convolution2D(32, 3, 3, 3, border_mode='full')) 
@@ -78,17 +78,20 @@ model.compile(loss='categorical_crossentropy', optimizer=sgd)
 #grapher = Grapher()
 #grapher.plot(model, "/temp/graph.png")
 
-#model.fit(X_train, Y_train, batch_size=5, nb_epoch=1)
+x_train = X_train - datagen.mean
+x_train = x_train / datagen.std
+
+model.fit(x_train, Y_train, batch_size=10, nb_epoch=1)
 
 nb_epoch = 10
 # batch train with realtime data augmentation
-progbar = generic_utils.Progbar(X_train.shape[0])
-for e in range(nb_epoch):
-    print('-'*40)
-    print('Epoch', e)
-    print('-'*40)
-    print("Training...")
-    # batch train with realtime data augmentation
-    for X_batch, Y_batch in datagen.flow(X_train, Y_train, batch_size=10):
-        loss = model.train_on_batch(X_batch, Y_batch)
-        progbar.add(X_batch.shape[0], values=[("train loss", loss)])
+#progbar = generic_utils.Progbar(X_train.shape[0])
+#for e in range(nb_epoch):
+#    print('-'*40)
+#    print('Epoch', e)
+#    print('-'*40)
+#    print("Training...")
+#    # batch train with realtime data augmentation
+#    for X_batch, Y_batch in datagen.flow(X_train, Y_train, batch_size=10):
+#        loss = model.train_on_batch(X_batch, Y_batch)
+#        progbar.add(X_batch.shape[0], values=[("train loss", loss)])

@@ -23,7 +23,7 @@ class DataSetLoader(object):
         files = map(lambda f: path.join(train_path, f), os.listdir(train_path))
         self.X_train = np.array(map(cv2.imread, files))
         # Theano wants depth (# of channels) to be the first dimension
-        self.X_train = np.transpose(self.X_train, (0, 3, 1, 2))
+        self.X_train = np.transpose(self.X_train, (0, 3, 1, 2)).astype('f')
         names = map(lambda f: path.split(f)[1], files)
         self.Y_train = np_utils.to_categorical(map(lambda n: ldict[labels_categ_dict[n]], names))
     
@@ -68,4 +68,4 @@ class BatchGenerator(object):
                 x_train += [im]
                 i += 1
                 self.current += 1
-            return np.array(x_train).transpose(0, 3, 1, 2), np_utils.to_categorical(y_train, nb_classes = len(self.ldict))  
+            return np.array(x_train).astype('f').transpose(0, 3, 1, 2), np_utils.to_categorical(y_train, nb_classes = len(self.ldict))  

@@ -19,17 +19,17 @@ labels_file = "/Kaggle/whales/train.csv"
 labels_map = "/Kaggle/whales/labels_map.csv"
 
 #def train(train_path, labels_file, labels_map):
-datagen = ImageDataGenerator(
-    featurewise_center=True,
-    featurewise_std_normalization=True,
-    rotation_range=20,
-    #width_shift_range=0.2,
-    #height_shift_range=0.2,
-    horizontal_flip=True)
+#datagen = ImageDataGenerator(
+#    featurewise_center=True,
+#    featurewise_std_normalization=True,
+#    rotation_range=20,
+#    #width_shift_range=0.2,
+#    #height_shift_range=0.2,
+#    horizontal_flip=True)
 
 dsl = DataSetLoader(train_path, labels_file, labels_map)
 X_train, Y_train, X_test, Y_test = dsl.get_fraction(.8)
-datagen.fit(X_train, augment=False, rounds=2)
+#datagen.fit(X_train, augment=False, rounds=2)
 
 model = Sequential()
 model.add(Convolution2D(32, 3, 3, 3, border_mode='full')) 
@@ -85,13 +85,13 @@ model.compile(loss='categorical_crossentropy', optimizer=sgd)
 #grapher = Grapher()
 #grapher.plot(model, "/temp/graph.png")
 
-x_train = X_train - datagen.mean
-x_train = x_train / datagen.std
+#x_train = X_train - datagen.mean
+#x_train = x_train / datagen.std
 
-x_test = X_test - datagen.mean
-x_test = x_test / datagen.std
+#x_test = X_test - datagen.mean
+#x_test = x_test / datagen.std
 
-model.fit(x_train, Y_train, show_accuracy = True, batch_size=30, nb_epoch=4, validation_data=(x_test, Y_test))
+model.fit(X_train, Y_train, show_accuracy = True, batch_size=30, nb_epoch=4, validation_data=(X_test, Y_test))
 
 json_string = model.to_json()
 open('/users/boris/dropbox/kaggle/whales/models/model_1.json', 'w').write(json_string)

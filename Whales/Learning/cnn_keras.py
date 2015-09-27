@@ -29,7 +29,7 @@ datagen = ImageDataGenerator(
 
 dsl = DataSetLoader(train_path, labels_file, labels_map)
 X_train, Y_train, X_test, Y_test = dsl.get_fraction(.8)
-datagen.fit(X_train, augment=False)
+datagen.fit(X_train, augment=False, rounds=2)
 
 model = Sequential()
 model.add(Convolution2D(32, 3, 3, 3, border_mode='full')) 
@@ -53,15 +53,22 @@ model.add(Activation('relu'))
 model.add(MaxPooling2D(poolsize=(2, 2)))
 model.add(Dropout(0.25))
 
-model.add(Convolution2D(64, 96, 3, 3, border_mode='full')) 
+model.add(Convolution2D(128, 96, 3, 3, border_mode='full')) 
 model.add(Activation('relu'))
-model.add(Convolution2D(64, 64, 3, 3)) 
+model.add(Convolution2D(128, 128, 3, 3)) 
+model.add(Activation('relu'))
+model.add(MaxPooling2D(poolsize=(2, 2)))
+model.add(Dropout(0.25))
+
+model.add(Convolution2D(160, 128, 3, 3, border_mode='full')) 
+model.add(Activation('relu'))
+model.add(Convolution2D(160, 160, 3, 3)) 
 model.add(Activation('relu'))
 model.add(MaxPooling2D(poolsize=(2, 2)))
 model.add(Dropout(0.25))
     
 model.add(Flatten())
-model.add(Dense(16384, 2000))
+model.add(Dense(10240, 2000))
 model.add(Activation('relu'))
 model.add(Dropout(0.5))
 

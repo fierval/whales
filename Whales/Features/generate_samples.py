@@ -10,6 +10,7 @@ from os import path
 import cv2
 from kobra.tr_utils import time_now_str, prep_out_path
 import shutil
+from scipy import ndimage, misc
 
 root = "/Kaggle/whales/kerano"
 out_dir = "/kaggle/whales/augmented"
@@ -23,18 +24,18 @@ def generate_samples(dir):
     files = labels[labels['whaleID'] == dir].icol(0).values
     for f in files:
         fl = path.join(root, f)
-        im = cv2.imread(fl)
-        cv2.imwrite(path.join(out_dir, dir, f), im)
+        im = ndimage.imread(fl)
+        misc.imsave(path.join(out_dir, dir, f), im)
 
         for rot in range(20, 100, 20):
-            for scale in np.linspace(1, 1, 1):
-                im_rot = imutils.rotate(im, rot, scale = scale)
+            #for scale in np.linspace(1, 1, 1):
+            im_rot = ndimage.interpolation.rotate(im, rot, axes=(0,1), reshape=False, mode="nearest", cval=0.)
 
-                new_name = path.splitext(path.split(fl)[1])[0]
-                new_name = "{0}_{1}_{2}".format(new_name, rot, scale).replace(".", "_") + ".jpg"
+            new_name = path.splitext(path.split(fl)[1])[0]
+            new_name = "{0}_{1}".format(new_name, rot).replace(".", "_") + ".jpg"
 
-                cv2.imwrite(path.join(out_dir, dir, new_name), im_rot)
-                print "rotated: {0} by {1} scaled by {2}".format(f, rot, scale)
+            misc.imsave(path.join(out_dir, dir, new_name), im_rot)
+            print "rotated: {0} by {1}".format(f, rot)
     return dir, len(files)
 
 #for dir in dirs:

@@ -6,7 +6,7 @@ import matplotlib.pylab as plt
 import cv2
 from sklearn.cross_validation import train_test_split
 
-train_path = "/Kaggle/whales/kerano"
+train_path = "/Kaggle/whales/augmented"
 labels_file = "/Kaggle/whales/train.csv"
 labels_map = "/Kaggle/whales/labels_map.csv"
 
@@ -54,18 +54,18 @@ class BatchGenerator(object):
         return self
 
     def next(self): # Python 3: def __next__(self)
-        if self.current > self.total:
+        if self.current >= self.total:
             raise StopIteration
         else:
             y_train = []
             x_train = []
             i = 0
             while(i < self.n and self.current < self.total):
-                im_path = self.files[self.current + i]
+                im_path = self.files[self.current]
                 im = cv2.imread(im_path)
                 lab_path = path.split(im_path)[0]
                 y_train += [self.ldict[lab_path]]
                 x_train += [im]
                 i += 1
                 self.current += 1
-            return (x_train, y_train)             
+            return np.array(x_train).transpose(0, 3, 1, 2), np_utils.to_categorical(y_train, nb_classes = len(self.ldict))  

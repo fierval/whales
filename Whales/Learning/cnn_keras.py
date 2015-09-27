@@ -91,7 +91,7 @@ x_train = x_train / datagen.std
 x_test = X_test - datagen.mean
 x_test = x_test / datagen.std
 
-model.fit(x_train, Y_train, batch_size=30, nb_epoch=4, validation_data=(x_test, Y_test))
+model.fit(x_train, Y_train, show_accuracy = True, batch_size=30, nb_epoch=4, validation_data=(x_test, Y_test))
 
 json_string = model.to_json()
 open('/users/boris/dropbox/kaggle/whales/models/model_1.json', 'w').write(json_string)

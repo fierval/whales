@@ -119,7 +119,7 @@ for e in range(nb_epoch):
             X_batch = x_train[i * nb_samples : (i + 1) * nb_samples]
             Y_batch = y_train[i * nb_samples : (i + 1) * nb_samples]
             loss = model.train_on_batch(X_batch, Y_batch)
-            progbar.add(X_batch.shape[0] + batches.current, values= [("train loss", loss)])
+            progbar.add(X_batch.shape[0], values= [("train loss", loss)])
 
 json_string = model.to_json()
 open('/users/boris/dropbox/kaggle/whales/models/model_1.json', 'w').write(json_string)

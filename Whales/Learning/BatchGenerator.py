@@ -60,11 +60,12 @@ class BatchGenerator(object):
             y_train = []
             x_train = []
             paths = self.files[self.current : self.current + self.n]
+            self.current += self.n
+
             for im_path in paths:
                 im = cv2.imread(im_path)
                 lab_path = path.split(im_path)[0]
                 y_train += [self.ldict[lab_path]]
                 x_train += [im]
 
-            self.current += self.n
             return np.array(x_train).astype('f').transpose(0, 3, 1, 2), np_utils.to_categorical(y_train, nb_classes = len(self.ldict))  

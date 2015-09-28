@@ -1,10 +1,14 @@
-﻿import numpy as np
+﻿from __future__ import print_function
+
+import numpy as np
 import pandas as pd
 import os
 from os import path
 import matplotlib.pylab as plt
 import cv2
 from BatchGenerator import DataSetLoader, BatchGenerator
+
+from sklearn.utils import shuffle as sk_shuffle
 
 from keras.models import Sequential
 from keras.layers.core import Dense, Dropout, Activation, Flatten
@@ -95,10 +99,27 @@ model.compile(loss='categorical_crossentropy', optimizer=sgd)
 #model.fit(X_train, Y_train, show_accuracy = True, batch_size=30, nb_epoch=4, validation_data=(X_test, Y_test))
 
 nb_epoch = 10
+batch_size = 1000
+nb_samples = 20
+
+batches = BatchGenerator(train_path, labels_map, batch_size)
+print("Total dataset: %d" % batches.total)
+
 for e in range(nb_epoch):
     print("epoch %d" % e)
-    for X_train, Y_train in BatchGenerator(train_path, labels_map, 2000): 
-        model.fit(X_train, Y_train, batch_size=5, nb_epoch=1, validation_data=(X_test, Y_test))
+    progbar = generic_utils.Progbar(batches.total)
+    for x_train, y_train in batches:
+        # shuffle
+        
+        x_train, y_train = sk_shuffle(x_train, y_train, random_state = 0)
+                
+        iterations = X_train.shape[0] / nb_samples if X_train.shape[0] % nb_samples == 0 else (X_train.shape[0] + nb_samples) / nb_samples
+        
+        for i in range(iterations):
+            X_batch = x_train[i * nb_samples : (i + 1) * nb_samples]
+            Y_batch = y_train[i * nb_samples : (i + 1) * nb_samples]
+            loss = model.train_on_batch(X_batch, Y_batch)
+            progbar.add(X_batch.shape[0] + batches.current, values= [("train loss", loss)])
 
 json_string = model.to_json()
 open('/users/boris/dropbox/kaggle/whales/models/model_1.json', 'w').write(json_string)

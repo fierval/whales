@@ -4,7 +4,7 @@ import os
 from os import path
 import matplotlib.pylab as plt
 import cv2
-from BatchGenerator import DataSetLoader
+from BatchGenerator import DataSetLoader, BatchGenerator
 
 from keras.models import Sequential
 from keras.layers.core import Dense, Dropout, Activation, Flatten
@@ -14,7 +14,8 @@ from keras.preprocessing.image import ImageDataGenerator
 #from keras.utils.dot_utils import Grapher
 from keras.utils import generic_utils
 
-train_path = "/Kaggle/whales/kerano"
+train_path = "/Kaggle/whales/augmented"
+val_path = "/kaggle/whales/kerano"
 labels_file = "/Kaggle/whales/train.csv"
 labels_map = "/Kaggle/whales/labels_map.csv"
 
@@ -27,7 +28,7 @@ labels_map = "/Kaggle/whales/labels_map.csv"
 #    #height_shift_range=0.2,
 #    horizontal_flip=True)
 
-dsl = DataSetLoader(train_path, labels_file, labels_map)
+dsl = DataSetLoader(val_path, labels_file, labels_map)
 X_train, Y_train, X_test, Y_test = dsl.get_fraction(.8)
 #datagen.fit(X_train, augment=False, rounds=2)
 
@@ -91,7 +92,13 @@ model.compile(loss='categorical_crossentropy', optimizer=sgd)
 #x_test = X_test - datagen.mean
 #x_test = x_test / datagen.std
 
-model.fit(X_train, Y_train, show_accuracy = True, batch_size=30, nb_epoch=4, validation_data=(X_test, Y_test))
+#model.fit(X_train, Y_train, show_accuracy = True, batch_size=30, nb_epoch=4, validation_data=(X_test, Y_test))
+
+nb_epoch = 10
+for e in range(nb_epoch):
+    print("epoch %d" % e)
+    for X_train, Y_train in BatchGenerator(train_path, labels_map, 2000): 
+        model.fit(X_train, Y_train, batch_size=5, nb_epoch=1, validation_data=(X_test, Y_test))
 
 json_string = model.to_json()
 open('/users/boris/dropbox/kaggle/whales/models/model_1.json', 'w').write(json_string)

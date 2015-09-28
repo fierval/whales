@@ -26,16 +26,22 @@ def generate_samples(dir):
         fl = path.join(root, f)
         im = ndimage.imread(fl)
         misc.imsave(path.join(out_dir, dir, f), im)
+        new_name = path.splitext(path.split(fl)[1])[0]
 
-        for rot in range(20, 100, 20):
-            #for scale in np.linspace(1, 1, 1):
+        for rot in range(20, 360, 20):
             im_rot = ndimage.interpolation.rotate(im, rot, axes=(0,1), reshape=False, mode="nearest", cval=0.)
 
-            new_name = path.splitext(path.split(fl)[1])[0]
-            new_name = "{0}_{1}".format(new_name, rot).replace(".", "_") + ".jpg"
+            save_name = "{0}_{1}".format(new_name, rot).replace(".", "_") + ".jpg"
 
-            misc.imsave(path.join(out_dir, dir, new_name), im_rot)
+            misc.imsave(path.join(out_dir, dir, save_name), im_rot)
             print "rotated: {0} by {1}".format(f, rot)
+        
+        # horizontal flip
+        #im_rot = np.fliplr(im)
+        #misc.imsave(path.join(out_dir, dir, new_name + "_hflip" + ".jpg"), im_rot)
+        #im_rot = np.flipud(im)
+        #misc.imsave(path.join(out_dir, dir, new_name + "_vflip" + ".jpg"), im_rot)
+
     return dir, len(files)
 
 #for dir in dirs:

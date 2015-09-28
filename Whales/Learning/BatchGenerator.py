@@ -47,7 +47,8 @@ class BatchGenerator(object):
             files = os.listdir(dir)
             files = map(lambda f: path.join(dir, f), files)
             self.files += files
-
+        
+        np.random.shuffle(self.files)
         self.total = len(self.files)
 
     def __iter__(self):

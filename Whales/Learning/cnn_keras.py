@@ -81,20 +81,19 @@ model.compile(loss='categorical_crossentropy', optimizer=sgd)
 #grapher.plot(model, "/temp/graph.png")
 
 nb_epoch = 10
-batch_size = 2000
-nb_samples = 20
+batch_size = 3000
+nb_samples = 30
 
-batches = BatchGenerator(train_path, labels_map, batch_size)
-print("Total dataset: %d" % batches.total)
+from kobra.tr_utils import time_now_str
+print("Start time: " + time_now_str())
 
 for e in range(nb_epoch):
-    print("epoch %d" % e)
+    print("Epoch %d" % e)
+    batches = BatchGenerator(train_path, labels_map, batch_size)
+
     progbar = generic_utils.Progbar(batches.total)
     for x_train, y_train in batches:
-        # shuffle
-        
-        x_train, y_train = sk_shuffle(x_train, y_train, random_state = 0)
-                
+               
         iterations = x_train.shape[0] / nb_samples if x_train.shape[0] % nb_samples == 0 else (x_train.shape[0] + nb_samples) / nb_samples
         
         for i in range(iterations):
@@ -102,6 +101,8 @@ for e in range(nb_epoch):
             Y_batch = y_train[i * nb_samples : (i + 1) * nb_samples]
             loss = model.train_on_batch(X_batch, Y_batch)
             progbar.add(X_batch.shape[0], values= [("train loss", loss)])
+
+print("End time: " + time_now_str())
 
 json_string = model.to_json()
 open('/users/boris/dropbox/kaggle/whales/models/model_1.json', 'w').write(json_string)

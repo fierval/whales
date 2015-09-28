@@ -23,18 +23,8 @@ val_path = "/kaggle/whales/kerano"
 labels_file = "/Kaggle/whales/train.csv"
 labels_map = "/Kaggle/whales/labels_map.csv"
 
-#def train(train_path, labels_file, labels_map):
-#datagen = ImageDataGenerator(
-#    featurewise_center=True,
-#    featurewise_std_normalization=True,
-#    rotation_range=20,
-#    #width_shift_range=0.2,
-#    #height_shift_range=0.2,
-#    horizontal_flip=True)
-
-dsl = DataSetLoader(val_path, labels_file, labels_map)
-X_train, Y_train, X_test, Y_test = dsl.get_fraction(.8)
-#datagen.fit(X_train, augment=False, rounds=2)
+#dsl = DataSetLoader(val_path, labels_file, labels_map)
+#X_train, Y_train, X_test, Y_test = dsl.get_fraction(.8)
 
 model = Sequential()
 model.add(Convolution2D(32, 3, 3, 3, border_mode='full')) 
@@ -90,16 +80,8 @@ model.compile(loss='categorical_crossentropy', optimizer=sgd)
 #grapher = Grapher()
 #grapher.plot(model, "/temp/graph.png")
 
-#x_train = X_train - datagen.mean
-#x_train = x_train / datagen.std
-
-#x_test = X_test - datagen.mean
-#x_test = x_test / datagen.std
-
-#model.fit(X_train, Y_train, show_accuracy = True, batch_size=30, nb_epoch=4, validation_data=(X_test, Y_test))
-
 nb_epoch = 10
-batch_size = 1000
+batch_size = 2000
 nb_samples = 20
 
 batches = BatchGenerator(train_path, labels_map, batch_size)
@@ -113,7 +95,7 @@ for e in range(nb_epoch):
         
         x_train, y_train = sk_shuffle(x_train, y_train, random_state = 0)
                 
-        iterations = X_train.shape[0] / nb_samples if X_train.shape[0] % nb_samples == 0 else (X_train.shape[0] + nb_samples) / nb_samples
+        iterations = x_train.shape[0] / nb_samples if x_train.shape[0] % nb_samples == 0 else (x_train.shape[0] + nb_samples) / nb_samples
         
         for i in range(iterations):
             X_batch = x_train[i * nb_samples : (i + 1) * nb_samples]
@@ -124,16 +106,3 @@ for e in range(nb_epoch):
 json_string = model.to_json()
 open('/users/boris/dropbox/kaggle/whales/models/model_1.json', 'w').write(json_string)
 model.save_weights('/users/boris/dropbox/kaggle/whales/models/weights_1.h5', overwrite=True)
-
-#nb_epoch = 10
-# batch train with realtime data augmentation
-#progbar = generic_utils.Progbar(X_train.shape[0])
-#for e in range(nb_epoch):
-#    print('-'*40)
-#    print('Epoch', e)
-#    print('-'*40)
-#    print("Training...")
-#    # batch train with realtime data augmentation
-#    for X_batch, Y_batch in datagen.flow(X_train, Y_train, batch_size=10):
-#        loss = model.train_on_batch(X_batch, Y_batch)
-#        progbar.add(X_batch.shape[0], values=[("train loss", loss)])

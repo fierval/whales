@@ -38,7 +38,6 @@ class BatchGenerator(object):
         self.current_val = 0
         self.files = []
         self.n = n
-        self._validate = False
 
         dirs = filter(path.isdir, map(lambda f: path.join(train_path, f), os.listdir(train_path)))
         labls = pd.read_csv(labels_map, header=None)
@@ -53,7 +52,7 @@ class BatchGenerator(object):
         np.random.shuffle(self.files)
 
         if val_split > 0:
-            self.files, self.val = train_test_split(self.files, train_size = 1. - val_split)
+            self.files, self.val = train_test_split(self.files, test_size = val_split)
             self.total_val = len(self.val)
 
         self.total = len(self.files)
@@ -61,50 +60,26 @@ class BatchGenerator(object):
     def __iter__(self):
         return self
 
-    @property
-    def validate(self):
-        return self._validate
+    def _read_ims(self, paths):
+        y_train = []
+        x_train = []
 
-    @validate.setter
-    def validate(self, val):
-        self._validate = val
+        for im_path in paths:
+            im = cv2.imread(im_path)
+            lab_path = path.split(im_path)[0]
+            y_train += [self.ldict[lab_path]]
+            x_train += [im]
 
-    def next(self): # Python 3: def __next__(self)
-        if self.validate:
-            return self.next_val()
-        else:
-            return self.next_train()
+        return np.array(x_train).astype('f').transpose(0, 3, 1, 2), np_utils.to_categorical(y_train, nb_classes = len(self.ldict))
 
-    def next_train(self):
+    def next(self):
         if self.current >= self.total:
             raise StopIteration
         else:
-            y_train = []
-            x_train = []
             paths = self.files[self.current : self.current + self.n]
             self.current += self.n
+            return self._read_ims(paths)
 
-            for im_path in paths:
-                im = cv2.imread(im_path)
-                lab_path = path.split(im_path)[0]
-                y_train += [self.ldict[lab_path]]
-                x_train += [im]
-
-            return np.array(x_train).astype('f').transpose(0, 3, 1, 2), np_utils.to_categorical(y_train, nb_classes = len(self.ldict))
-
-    def next_val(self):
-        if self.current_val >= self.total_val:
-            raise StopIteration
-        else:
-            y_train = []
-            x_train = []
-            paths = self.val[self.current : self.current + self.n]
-            self.current_val += self.n
-
-            for im_path in paths:
-                im = cv2.imread(im_path)
-                lab_path = path.split(im_path)[0]
-                y_train += [self.ldict[lab_path]]
-                x_train += [im]
-
-            return np.array(x_train).astype('f').transpose(0, 3, 1, 2), np_utils.to_categorical(y_train, nb_classes = len(self.ldict))  
+    def get_val(self):
+        return self._read_ims(self.val)
+        

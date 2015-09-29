@@ -4,13 +4,11 @@ import cv2
 import numpy as np
 
 from keras.models import model_from_json
-#from keras.utils.dot_utils import Grapher
 
-train_path = "/Kaggle/whales/kerano"
 test_path = "/Kaggle/whales/test"
 labels_file = "/Kaggle/whales/train.csv"
 labels_map = "/Kaggle/whales/labels_map.csv"
-models_path = "/kaggle/whales/models"
+models_path = "/users/boris/dropbox/kaggle/whales/models"
 sample_submission = "/Kaggle/whales/sample_submission.csv"
 
 json_path = path.join(models_path, "model_1.json")

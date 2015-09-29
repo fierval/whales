@@ -92,9 +92,9 @@ model.compile(loss='categorical_crossentropy', optimizer=sgd)
 #grapher = Grapher()
 #grapher.plot(model, "/temp/graph.png")
 
-nb_epoch = 10
+nb_epoch = 3
 batch_size = 3000
-nb_samples = 10
+nb_samples = 30
 
 from kobra.tr_utils import time_now_str
 print("Start time: " + time_now_str())
@@ -113,7 +113,12 @@ for e in range(nb_epoch):
             Y_batch = y_train[i * nb_samples : (i + 1) * nb_samples]
             loss = model.train_on_batch(X_batch, Y_batch)
             progbar.add(X_batch.shape[0], values= [("train loss", loss)])
+    
+        batches.validate = True
+        for x_val, y_val in batches:
+            model.evaluate(x_val, y_val, show_accuracy=True)
 
+         
 print("End time: " + time_now_str())
 
 json_string = model.to_json()

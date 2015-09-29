@@ -33,10 +33,12 @@ class DataSetLoader(object):
 
 class BatchGenerator(object):
 
-    def __init__(self, train_path, labels_map, n = 500):
+    def __init__(self, train_path, labels_map, n = 500, val_split = 0.2):
         self.current = 0
+        self.current_val = 0
         self.files = []
         self.n = n
+        self._validate = False
 
         dirs = filter(path.isdir, map(lambda f: path.join(train_path, f), os.listdir(train_path)))
         labls = pd.read_csv(labels_map, header=None)
@@ -49,12 +51,31 @@ class BatchGenerator(object):
             self.files += files
         
         np.random.shuffle(self.files)
+
+        if val_split > 0:
+            self.files, self.val = train_test_split(self.files, train_size = 1. - val_split)
+            self.total_val = len(self.val)
+
         self.total = len(self.files)
 
     def __iter__(self):
         return self
 
+    @property
+    def validate(self):
+        return self._validate
+
+    @validate.setter
+    def validate(self, val):
+        self._validate = val
+
     def next(self): # Python 3: def __next__(self)
+        if self._validate:
+            return self._next_val()
+        else:
+            return self.next_train()
+
+    def next_train(self):
         if self.current >= self.total:
             raise StopIteration
         else:
@@ -62,6 +83,23 @@ class BatchGenerator(object):
             x_train = []
             paths = self.files[self.current : self.current + self.n]
             self.current += self.n
+
+            for im_path in paths:
+                im = cv2.imread(im_path)
+                lab_path = path.split(im_path)[0]
+                y_train += [self.ldict[lab_path]]
+                x_train += [im]
+
+            return np.array(x_train).astype('f').transpose(0, 3, 1, 2), np_utils.to_categorical(y_train, nb_classes = len(self.ldict))
+
+    def next_val(self):
+        if self.current_val >= self.total_val:
+            raise StopIteration
+        else:
+            y_train = []
+            x_train = []
+            paths = self.val[self.current : self.current + self.n]
+            self.current_val += self.n
 
             for im_path in paths:
                 im = cv2.imread(im_path)

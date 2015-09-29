@@ -13,6 +13,7 @@ from sklearn.utils import shuffle as sk_shuffle
 from keras.models import Sequential
 from keras.layers.core import Dense, Dropout, Activation, Flatten
 from keras.layers.convolutional import Convolution2D, MaxPooling2D
+from keras.layers.normalization import BatchNormalization
 from keras.optimizers import SGD
 from keras.preprocessing.image import ImageDataGenerator
 #from keras.utils.dot_utils import Grapher
@@ -27,24 +28,28 @@ labels_map = "/Kaggle/whales/labels_map.csv"
 #X_train, Y_train, X_test, Y_test = dsl.get_fraction(.8)
 
 model = Sequential()
-model.add(Convolution2D(32, 3, 3, 3, border_mode='full')) 
+model.add(BatchNormalization((3, 256, 256)))
+model.add(Convolution2D(32, 3, 7, 7, border_mode='full')) 
 model.add(Activation('relu'))
-model.add(Convolution2D(32, 32, 3, 3))
-model.add(Activation('relu'))
+model.add(BatchNormalization((32, 262, 262)))
+#model.add(Convolution2D(32, 32, 7, 7))
+#model.add(Activation('relu'))
 model.add(MaxPooling2D(poolsize=(2, 2)))
 model.add(Dropout(0.25))
 
-model.add(Convolution2D(64, 32, 3, 3, border_mode='full')) 
+model.add(Convolution2D(64, 32, 5, 5, border_mode='full')) 
 model.add(Activation('relu'))
-model.add(Convolution2D(64, 64, 3, 3)) 
-model.add(Activation('relu'))
+model.add(BatchNormalization((64, 135, 135)))
+#model.add(Convolution2D(64, 64, 5, 5)) 
+#model.add(Activation('relu'))
 model.add(MaxPooling2D(poolsize=(2, 2)))
 model.add(Dropout(0.25))
 
 model.add(Convolution2D(96, 64, 3, 3, border_mode='full')) 
 model.add(Activation('relu'))
-model.add(Convolution2D(96, 96, 3, 3)) 
-model.add(Activation('relu'))
+model.add(BatchNormalization((96, 69, 69)))
+#model.add(Convolution2D(96, 96, 3, 3)) 
+#model.add(Activation('relu'))
 model.add(MaxPooling2D(poolsize=(2, 2)))
 model.add(Dropout(0.25))
 
@@ -63,12 +68,19 @@ model.add(MaxPooling2D(poolsize=(2, 2)))
 model.add(Dropout(0.25))
     
 model.add(Flatten())
-model.add(Dense(10240, 2000))
+model.add(Dense(10240, 5000))
 model.add(Activation('relu'))
+model.add(BatchNormalization((5000,)))
+model.add(Dropout(0.5))
+
+model.add(Dense(5000, 2000))
+model.add(Activation('relu'))
+model.add(BatchNormalization((2000,)))
 model.add(Dropout(0.5))
 
 model.add(Dense(2000, 1000))
 model.add(Activation('relu'))
+model.add(BatchNormalization((1000,)))
 model.add(Dropout(0.5))
 
 model.add(Dense(1000, 447))
@@ -82,7 +94,7 @@ model.compile(loss='categorical_crossentropy', optimizer=sgd)
 
 nb_epoch = 10
 batch_size = 3000
-nb_samples = 30
+nb_samples = 10
 
 from kobra.tr_utils import time_now_str
 print("Start time: " + time_now_str())

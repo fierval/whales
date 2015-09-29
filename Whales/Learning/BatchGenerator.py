@@ -70,7 +70,7 @@ class BatchGenerator(object):
         self._validate = val
 
     def next(self): # Python 3: def __next__(self)
-        if self._validate:
+        if self.validate:
             return self._next_val()
         else:
             return self.next_train()

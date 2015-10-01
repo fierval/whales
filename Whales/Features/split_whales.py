@@ -8,10 +8,10 @@ from shutil import copy
 
 labels_file = "/Kaggle/whales/train.csv"
 sample_submission = "/Kaggle/whales/sample_submission.csv"
-inp_path = "/Kaggle/whales/c1"
-out_path = "/Kaggle/whales/train"
-test_path = "/Kaggle/whales/test"
-train_path = "/Kaggle/whales/kerano"
+inp_path = "/Kaggle/whales/cropped384"
+out_path = "/Kaggle/whales/train384"
+test_path = "/Kaggle/whales/test384"
+train_path = "/Kaggle/whales/kerano384"
 labels_map = "/Kaggle/whales/labels_map.csv"
 
 def copy_files_to_label_dirs(inp_path, out_path, labels_file):

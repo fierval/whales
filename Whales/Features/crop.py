@@ -20,9 +20,9 @@ def get_masks(images):
         return mask
     return map(lambda i: mask(i), images)
 
-img_path = "/kaggle/whales/c1"
-out_path = "/kaggle/whales/test"
-size = (256, 256)
+img_path = "/kaggle/whales/color"
+out_path = "/kaggle/whales/cropped384"
+size = (384, 384)
 image_names = os.listdir(img_path)
 
 image_paths = map(lambda t: path.join(img_path, t), image_names)
@@ -84,7 +84,7 @@ def crop(image_name):
 
     cnts = [cnts[i] for i in contour_areas_sorted[::-1][:10]]
     if len(cnts) == 0:
-        cv2.imwrite(out_im_name, cv2.resize(image, (256, 256)))
+        cv2.imwrite(out_im_name, cv2.resize(image, size))
     else:
         # bounding rectangle for cropping
         x, y, w, h = cv2.boundingRect(np.vstack(cnts))
@@ -95,7 +95,7 @@ def crop(image_name):
 
         # now crop it
         x1, y1, w1, h1 = tuple(map(lambda e: e * 4, (x, y, w, h)))
-        toSave = cv2.resize(image[y1:y1+h1, x1:x1+w1, :], (256, 256))
+        toSave = cv2.resize(image[y1:y1+h1, x1:x1+w1, :], size)
 
         cv2.imwrite(out_im_name, toSave)
 

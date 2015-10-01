@@ -6,7 +6,7 @@ import matplotlib.pylab as plt
 import cv2
 from sklearn.cross_validation import train_test_split
 
-train_path = "/Kaggle/whales/augmented"
+train_path = "/Kaggle/whales/train384"
 labels_file = "/Kaggle/whales/train.csv"
 labels_map = "/Kaggle/whales/labels_map.csv"
 
@@ -33,21 +33,32 @@ class DataSetLoader(object):
 
 class BatchGenerator(object):
 
-    def __init__(self, train_path, labels_map, n = 500, val_split = 0.2):
+    def __init__(self, train_path, labels_file, labels_map, n = 500, val_split = 0.2):
         self.current = 0
         self.current_val = 0
         self.files = []
         self.n = n
 
+        labels = pd.read_csv(labels_file)
+        self.labels_categ_dict = {key: value for key, value in labels.values}
+
         dirs = filter(path.isdir, map(lambda f: path.join(train_path, f), os.listdir(train_path)))
         labls = pd.read_csv(labels_map, header=None)
-        self.ldict = {path.join(train_path, key): value for key, value in labls.values}
+        self.flat_struct = len(dirs) == 0
+        self.ldict = {}
+        if self.flat_struct:
+            self.ldict =  {key: value for key, value in labls.values}
+        else:
+            self.ldict =  {path.join(train_path, key): value for key, value in labls.values}
 
-        for d in dirs:
-            dir = path.join(train_path, d)
-            files = os.listdir(dir)
-            files = map(lambda f: path.join(dir, f), files)
-            self.files += files
+        if self.flat_struct:
+            self.files = map(lambda f: path.join(train_path, f), os.listdir(train_path))
+        else:
+            for d in dirs:
+                dir = path.join(train_path, d)
+                files = os.listdir(dir)
+                files = map(lambda f: path.join(dir, f), files)
+                self.files += files
         
         np.random.shuffle(self.files)
 
@@ -66,8 +77,13 @@ class BatchGenerator(object):
 
         for im_path in paths:
             im = cv2.imread(im_path)
-            lab_path = path.split(im_path)[0]
-            y_train += [self.ldict[lab_path]]
+            # TODO: Enable augmented names
+            if self.flat_struct:
+                name = path.split(im_path)[1]
+                y_train = self.ldict[self.labels_categ_dict[name]]
+            else:
+                lab_path = path.split(im_path)[0]
+                y_train += [self.ldict[lab_path]]
             x_train += [im]
 
         return np.array(x_train).astype('f').transpose(0, 3, 1, 2), np_utils.to_categorical(y_train, nb_classes = len(self.ldict))

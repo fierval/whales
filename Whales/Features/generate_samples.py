@@ -31,16 +31,16 @@ def generate_samples(dir):
         for rot in range(60, 180 + 60, 60):
             im_rot = ndimage.interpolation.rotate(im, rot, axes=(0,1), reshape=False, mode="nearest", cval=0.)
 
-            save_name = "{0}_{1}".format(new_name, rot).replace(".", "_") + ".jpg"
+            save_name = "{0}-{1}".format(new_name, rot).replace(".", "-") + ".jpg"
 
             misc.imsave(path.join(out_dir, dir, save_name), im_rot)
             print "rotated: {0} by {1}".format(f, rot)
         
         # horizontal flip
         im_rot = np.fliplr(im)
-        misc.imsave(path.join(out_dir, dir, new_name + "_hflip" + ".jpg"), im_rot)
+        misc.imsave(path.join(out_dir, dir, new_name + "-hflip" + ".jpg"), im_rot)
         im_rot = np.flipud(im)
-        misc.imsave(path.join(out_dir, dir, new_name + "_vflip" + ".jpg"), im_rot)
+        misc.imsave(path.join(out_dir, dir, new_name + "-vflip" + ".jpg"), im_rot)
 
     return dir, len(files)
 

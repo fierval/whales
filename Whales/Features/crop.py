@@ -20,9 +20,9 @@ def get_masks(images):
         return mask
     return map(lambda i: mask(i), images)
 
-img_path = "/kaggle/whales/color"
-out_path = "/kaggle/whales/cropped384"
-size = (384, 384)
+img_path = "/kaggle/whales/imgs"
+out_path = "/kaggle/whales/resized256"
+size = (256, 256)
 image_names = os.listdir(img_path)
 
 image_paths = map(lambda t: path.join(img_path, t), image_names)
@@ -101,9 +101,19 @@ def crop(image_name):
 
     return out_im_name
 
+def resize_only(image_name):
+    image = cv2.imread(image_name)
+
+    out_name = path.split(image_name)[1]
+    out_im_name = path.join(out_path, out_name)
+
+    toSave = cv2.resize(image, size)
+
+    cv2.imwrite(out_im_name, toSave)
+    
 prep_out_path(out_path)
 dv = Client().load_balanced_view()
-fs = dv.map(crop, np.array(image_paths))
+fs = dv.map(resize_only, np.array(image_paths))
 print "Started: ", time_now_str()
 fs.wait()
 print "Finished: ", time_now_str()

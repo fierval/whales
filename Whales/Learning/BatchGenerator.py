@@ -21,6 +21,8 @@ class DataSetLoader(object):
         ldict = {key: value for key, value in labls.values}
 
         files = map(lambda f: path.join(train_path, f), os.listdir(train_path))
+        np.random.shuffle(files)
+
         self.X_train = np.array(map(cv2.imread, files))
         # Theano wants depth (# of channels) to be the first dimension
         self.X_train = np.transpose(self.X_train, (0, 3, 1, 2)).astype('f')

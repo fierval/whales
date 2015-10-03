@@ -114,7 +114,7 @@ model.compile(loss='categorical_crossentropy', optimizer=Adagrad())
 
 nb_epoch = 2
 batch_size = 300
-nb_samples = 2
+nb_samples = 30
 
 from kobra.tr_utils import time_now_str
 print("Start time: " + time_now_str())
@@ -126,9 +126,9 @@ imgen = ImageDataGenerator()
 imgen.fit(dsl.X_train)
 
 X_train = dsl.X_train - imgen.mean
-X_train = dsl.X_train / imgen.std
+X_train = X_train / imgen.std
 
-model.fit(X_train, dsl.Y_train, batch_size=5, nb_epoch=1, validation_split=0.1)
+model.fit(X_train, dsl.Y_train, batch_size=30, nb_epoch=10, validation_split=0.1)
 
 #for e in range(nb_epoch):
 #    print("Epoch %d" % e)

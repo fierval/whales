@@ -11,9 +11,9 @@ labels_map = "/Kaggle/whales/labels_map.csv"
 models_path = "/users/boris/dropbox/kaggle/whales/models"
 sample_submission = "/Kaggle/whales/sample_submission.csv"
 
-json_path = path.join(models_path, "model_2.json")
+json_path = path.join(models_path, "model_3.json")
 model = model_from_json(open(json_path).read())
-model.load_weights(path.join(models_path, "weights_2.h5"))
+model.load_weights(path.join(models_path, "weights_3.h5"))
 
 ss = pd.read_csv(sample_submission)
 images = pd.DataFrame(ss['Image'])
@@ -29,4 +29,4 @@ Y_test = model.predict(X_test, batch_size=30, verbose=1)
 labels = pd.DataFrame(Y_test, columns=ss.columns[1:])
 preds = images.join(labels)
 
-preds.to_csv("/kaggle/whales/submissions/sub3.csv", index=False)
+preds.to_csv("/kaggle/whales/submissions/sub4.csv", index=False)

@@ -20,12 +20,17 @@ def get_masks(images):
         return mask
     return map(lambda i: mask(i), images)
 
-img_path = "/kaggle/whales/imgs"
-out_path = "/kaggle/whales/resized256"
+img_path = "/kaggle/whales/cropped"
+out_path = "/kaggle/whales/kmeans"
 size = (256, 256)
 image_names = os.listdir(img_path)
 
 image_paths = map(lambda t: path.join(img_path, t), image_names)
+
+def get_output_name(image_name):
+    out_name = path.split(image_name)[1]
+    out_im_name = path.join(out_path, out_name)
+    return out_im_name
 
 def pre(img):
     img_shift = cv2.pyrDown(img)
@@ -39,13 +44,13 @@ def pre(img):
 
     return img_shift
 
-def kmeans(image):
+def kmeans(image, K):
     Z = image.reshape((-1,3))
     Z = np.float32(Z)
 
     # define criteria, number of clusters(K) and apply kmeans()
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
-    K = 3
+    
     ret,label,center=cv2.kmeans(Z,K,None,criteria,10,cv2.KMEANS_RANDOM_CENTERS)
 
     # Now convert back into uint8, and make original image
@@ -110,10 +115,18 @@ def resize_only(image_name):
     toSave = cv2.resize(image, size)
 
     cv2.imwrite(out_im_name, toSave)
+
+def kmeans_only(image_name, K=10):
+    out_im_name = get_output_name(image_name)
+    image = cv2.imread(image_name)
     
+    toSave, _, _ = kmeans(image, K)
+
+    cv2.imwrite(out_im_name, toSave)
+        
 prep_out_path(out_path)
 dv = Client().load_balanced_view()
-fs = dv.map(resize_only, np.array(image_paths))
+fs = dv.map(kmeans_only, np.array(image_paths))
 print "Started: ", time_now_str()
 fs.wait()
 print "Finished: ", time_now_str()

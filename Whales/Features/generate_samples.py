@@ -65,7 +65,11 @@ for dir in dirs:
     os.makedirs(path.join(out_dir, dir))
 
 dv = Client().load_balanced_view()
-fs = dv.map(generate_samples, np.array(dirs), False, True, True)
+flip = [False] * len(dirs)
+rotate = [True] * len(dirs)
+zoom = [True] * len(dirs)
+
+fs = dv.map(generate_samples, np.array(dirs), flip, rotate, zoom)
 print "Started: ", time_now_str()
 fs.wait()
 print "Finished: ", time_now_str()
